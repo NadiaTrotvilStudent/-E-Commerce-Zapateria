@@ -1,0 +1,91 @@
+<mxfile host="app.diagrams.net" modified="2026-04-20T10:50:00.000Z" agent="Codex" version="24.7.17">
+  <diagram id="modelo-ecommerce-der" name="Modelo E-Commerce DER">
+    <mxGraphModel dx="1800" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1920" pageHeight="1080" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <mxCell id="usuario" value="Usuario&#xa;PK id&#xa;username&#xa;email&#xa;password&#xa;nombre&#xa;apellido" style="shape=swimlane;rounded=0;whiteSpace=wrap;html=1;startSize=28;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="60" width="220" height="170" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="categoria" value="Categoria&#xa;PK id&#xa;nombre" style="shape=swimlane;rounded=0;whiteSpace=wrap;html=1;startSize=28;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="340" y="40" width="190" height="100" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="marca" value="Marca&#xa;PK id&#xa;nombre" style="shape=swimlane;rounded=0;whiteSpace=wrap;html=1;startSize=28;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="340" y="160" width="190" height="100" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="tipo" value="TipoProducto&#xa;PK id&#xa;nombre" style="shape=swimlane;rounded=0;whiteSpace=wrap;html=1;startSize=28;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="340" y="280" width="190" height="100" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="genero" value="Genero&#xa;PK id&#xa;nombre" style="shape=swimlane;rounded=0;whiteSpace=wrap;html=1;startSize=28;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="340" y="400" width="190" height="100" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="producto" value="Producto&#xa;PK id&#xa;nombre&#xa;descripcion&#xa;precio&#xa;stock&#xa;imagenUrl&#xa;FK categoria_id&#xa;FK marca_id&#xa;FK tipo_producto_id&#xa;FK genero_id&#xa;FK usuario_id" style="shape=swimlane;rounded=0;whiteSpace=wrap;html=1;startSize=28;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="630" y="120" width="260" height="250" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="variante" value="VarianteProducto&#xa;PK id&#xa;talle&#xa;color&#xa;stock&#xa;FK producto_id" style="shape=swimlane;rounded=0;whiteSpace=wrap;html=1;startSize=28;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="980" y="150" width="220" height="150" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="carrito" value="Carrito&#xa;PK id&#xa;fechaCreacion&#xa;fechaActualizacion&#xa;FK usuario_id (unique)" style="shape=swimlane;rounded=0;whiteSpace=wrap;html=1;startSize=28;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="330" width="240" height="140" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="item" value="ItemCarrito&#xa;PK id&#xa;cantidad&#xa;precioUnitario&#xa;FK carrito_id&#xa;FK variante_producto_id" style="shape=swimlane;rounded=0;whiteSpace=wrap;html=1;startSize=28;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="630" y="470" width="240" height="150" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="orden" value="Orden&#xa;PK id&#xa;total&#xa;fechaCreacion&#xa;FK usuario_id" style="shape=swimlane;rounded=0;whiteSpace=wrap;html=1;startSize=28;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="570" width="230" height="130" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="detalle" value="DetalleOrden&#xa;PK id&#xa;productoNombre&#xa;talle&#xa;color&#xa;cantidad&#xa;precioUnitario&#xa;subtotal&#xa;FK orden_id&#xa;FK variante_producto_id" style="shape=swimlane;rounded=0;whiteSpace=wrap;html=1;startSize=28;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="630" y="700" width="260" height="220" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="r1" value="1:N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeColor=#666666;fontStyle=1;" edge="1" parent="1" source="usuario" target="producto">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="r2" value="1:N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeColor=#666666;fontStyle=1;" edge="1" parent="1" source="categoria" target="producto">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="r3" value="1:N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeColor=#666666;fontStyle=1;" edge="1" parent="1" source="marca" target="producto">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="r4" value="1:N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeColor=#666666;fontStyle=1;" edge="1" parent="1" source="tipo" target="producto">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="r5" value="1:N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeColor=#666666;fontStyle=1;" edge="1" parent="1" source="genero" target="producto">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="r6" value="1:N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeColor=#666666;fontStyle=1;" edge="1" parent="1" source="producto" target="variante">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="r7" value="1:1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeColor=#666666;fontStyle=1;" edge="1" parent="1" source="usuario" target="carrito">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="r8" value="1:N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeColor=#666666;fontStyle=1;" edge="1" parent="1" source="carrito" target="item">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="r9" value="1:N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeColor=#666666;fontStyle=1;" edge="1" parent="1" source="variante" target="item">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="r10" value="1:N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeColor=#666666;fontStyle=1;" edge="1" parent="1" source="usuario" target="orden">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="r11" value="1:N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeColor=#666666;fontStyle=1;" edge="1" parent="1" source="orden" target="detalle">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="r12" value="1:N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeColor=#666666;fontStyle=1;" edge="1" parent="1" source="variante" target="detalle">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

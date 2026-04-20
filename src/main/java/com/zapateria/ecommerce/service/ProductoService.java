@@ -1,0 +1,187 @@
+package com.zapateria.ecommerce.service;
+
+import com.zapateria.ecommerce.dto.ProductoRequest;
+import com.zapateria.ecommerce.dto.ProductoResponse;
+import com.zapateria.ecommerce.exception.BadRequestException;
+import com.zapateria.ecommerce.exception.ResourceNotFoundException;
+import com.zapateria.ecommerce.model.Categoria;
+import com.zapateria.ecommerce.model.Genero;
+import com.zapateria.ecommerce.model.Marca;
+import com.zapateria.ecommerce.model.Producto;
+import com.zapateria.ecommerce.model.Usuario;
+import com.zapateria.ecommerce.model.VarianteProducto;
+import com.zapateria.ecommerce.model.TipoProducto;
+import com.zapateria.ecommerce.repository.CategoriaRepository;
+import com.zapateria.ecommerce.repository.GeneroRepository;
+import com.zapateria.ecommerce.repository.MarcaRepository;
+import com.zapateria.ecommerce.repository.ProductoRepository;
+import com.zapateria.ecommerce.repository.TipoProductoRepository;
+import com.zapateria.ecommerce.repository.UsuarioRepository;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+/**
+ * Logica principal para crear, actualizar, buscar y eliminar productos.
+ */
+@Service
+public class ProductoService {
+
+    private final ProductoRepository productoRepository;
+    private final CategoriaRepository categoriaRepository;
+    private final UsuarioRepository usuarioRepository;
+    private final MarcaRepository marcaRepository;
+    private final TipoProductoRepository tipoProductoRepository;
+    private final GeneroRepository generoRepository;
+
+    public ProductoService(
+            ProductoRepository productoRepository,
+            CategoriaRepository categoriaRepository,
+            UsuarioRepository usuarioRepository,
+            MarcaRepository marcaRepository,
+            TipoProductoRepository tipoProductoRepository,
+            GeneroRepository generoRepository
+    ) {
+        this.productoRepository = productoRepository;
+        this.categoriaRepository = categoriaRepository;
+        this.usuarioRepository = usuarioRepository;
+        this.marcaRepository = marcaRepository;
+        this.tipoProductoRepository = tipoProductoRepository;
+        this.generoRepository = generoRepository;
+    }
+
+    /**
+     * Lista todos los productos o los filtra por categoria.
+     */
+    public List<ProductoResponse> listarProductos(Long categoriaId) {
+        List<Producto> productos = categoriaId == null
+                ? productoRepository.findAllByOrderByNombreAsc()
+                : productoRepository.findByCategoriaIdOrderByNombreAsc(categoriaId);
+
+        return productos.stream().map(this::toResponse).toList();
+    }
+
+    /**
+     * Busca un producto puntual y lo devuelve como DTO.
+     */
+    public ProductoResponse obtenerProducto(Long id) {
+        return toResponse(buscarProducto(id));
+    }
+
+    /**
+     * Crea un producto nuevo a partir de un request.
+     */
+    public ProductoResponse guardarProducto(ProductoRequest request) {
+        Producto producto = new Producto();
+        aplicarCambios(producto, request);
+        return toResponse(productoRepository.save(producto));
+    }
+
+    /**
+     * Actualiza los datos generales de un producto existente.
+     */
+    public ProductoResponse actualizarProducto(Long id, ProductoRequest request) {
+        Producto producto = buscarProducto(id);
+        aplicarCambios(producto, request);
+        return toResponse(productoRepository.save(producto));
+    }
+
+    /**
+     * Elimina un producto por su identificador.
+     */
+    public void eliminarProducto(Long id) {
+        Producto producto = buscarProducto(id);
+        productoRepository.delete(producto);
+    }
+
+    /**
+     * Busca la entidad Producto o lanza error si no existe.
+     */
+    private Producto buscarProducto(Long id) {
+        return productoRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado con id " + id));
+    }
+
+    /**
+     * Copia los datos del request dentro de la entidad Producto.
+     * Tambien resuelve las relaciones contra otras tablas.
+     */
+    private void aplicarCambios(Producto producto, ProductoRequest request) {
+        Categoria categoria = categoriaRepository.findById(request.categoriaId())
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Categoria no encontrada con id " + request.categoriaId()
+                ));
+
+        Marca marca = marcaRepository.findById(request.marcaId())
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Marca no encontrada con id " + request.marcaId()
+                ));
+
+        TipoProducto tipoProducto = tipoProductoRepository.findById(request.tipoProductoId())
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Tipo de producto no encontrado con id " + request.tipoProductoId()
+                ));
+
+        Genero genero = generoRepository.findById(request.generoId())
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Genero no encontrado con id " + request.generoId()
+                ));
+
+        Usuario usuario = usuarioRepository.findById(request.usuarioCreadorId())
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Usuario no encontrado con id " + request.usuarioCreadorId()
+                ));
+
+        producto.setNombre(request.nombre().trim());
+        producto.setDescripcion(request.descripcion().trim());
+        producto.setPrecio(request.precio());
+        producto.setStock(request.stock());
+        producto.setImagenUrl(request.imagenUrl());
+        producto.setMarca(marca);
+        producto.setTipoProducto(tipoProducto);
+        producto.setGenero(genero);
+        producto.setCategoria(categoria);
+        producto.setUsuarioCreador(usuario);
+    }
+
+    /**
+     * Convierte la entidad a un DTO completo, incluyendo variantes.
+     */
+    private ProductoResponse toResponse(Producto producto) {
+        List<com.zapateria.ecommerce.dto.VarianteProductoResponse> variantes = producto.getVariantes().stream()
+                .map(this::toVarianteResponse)
+                .toList();
+
+        return new ProductoResponse(
+                producto.getId(),
+                producto.getNombre(),
+                producto.getDescripcion(),
+                producto.getPrecio(),
+                producto.getStock(),
+                producto.getImagenUrl(),
+                producto.getMarca().getId(),
+                producto.getMarca().getNombre(),
+                producto.getTipoProducto().getId(),
+                producto.getTipoProducto().getNombre(),
+                producto.getGenero().getId(),
+                producto.getGenero().getNombre(),
+                producto.getCategoria().getId(),
+                producto.getCategoria().getNombre(),
+                producto.getUsuarioCreador().getId(),
+                producto.getUsuarioCreador().getUsername(),
+                variantes
+        );
+    }
+
+    /**
+     * Convierte una variante de producto a su DTO de salida.
+     */
+    private com.zapateria.ecommerce.dto.VarianteProductoResponse toVarianteResponse(VarianteProducto variante) {
+        return new com.zapateria.ecommerce.dto.VarianteProductoResponse(
+                variante.getId(),
+                variante.getTalle(),
+                variante.getColor(),
+                variante.getStock()
+        );
+    }
+}
